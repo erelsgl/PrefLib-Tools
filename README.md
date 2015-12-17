@@ -1,5 +1,5 @@
 # PrefLib-Tools
-README.txt for PrefLib utilities (c) Nicholas Mattei and NICTA.
+README.md for PrefLib Tools (c) Nicholas Mattei and Data61/NICTA.
 
 A a small of lightweight tools in Python3 for working with data from www.PrefLib.org and generating synthetic data for use in voting and preference experiments.
 
@@ -7,7 +7,17 @@ Please see www.PrefLib.org for more information about our project and a large li
 
 This code comes without warranty. Please use or distribute for research and academic uses only. Please use according to the citation and fair use requests on found at www.preflib.org.
 
-# Release Version 0.2
+#Dev Notes
+- This is being updated piecemeal in order to make it a more coherent Python package and make the interface more reasonable.  The master branch will always contain a working version of the code while the dev branch may be a bit spotty.
+- I am currently working on adding some tests and adding notebooks which serve as documentation to the interface.
+- The notebooks and most of the library is build around a full SciPy stack (IPython, MatPlotLib, Numpy, Pandas, etc.).  For more on scientific computing in Python please see the great resource at http://bender.astro.sunysb.edu/classes/python-science/ 
+
+## Release Version 0.2.1 
+This release includes a new directory structure and information to use PrefLib Tools as a package.
+
+-To install use pip3 install -e . as we are still devloping the library and you likely don't want to install it every time.  It may be best to do this in a virturalenv for any projects you are working on.
+
+## Release Version 0.2
 
 This release includes the following 3 files:
 
@@ -15,7 +25,7 @@ This release includes the following 3 files:
 2. PreflibUtils.py
 3. DomainRestriction.py
 
-## OVERVIEW
+# OVERVIEW
 
 The code in this release consists of the working versions of code that has
 been used in my research for a couple of years.
