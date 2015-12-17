@@ -1,5 +1,5 @@
 '''
-	*File: 	  TestProfile.py
+	*File: 	  domain_restriction.py
 	*Author:	Nicholas Mattei (nicholas.mattei@nicta.com.au)
 	*Date:	  March 18, 2014
   *
@@ -43,10 +43,8 @@ import sys
 import copy
 import glob
 
-#Import PrefLib Libraries
-sys.path.insert(0, "./")
-import GenerateProfiles
-import PreflibUtils
+from preflibtools import io
+from preflibtools import generate_profiles
 
 # Implement of the Single Peaked Consistancy Algorithm detailed in
 # B. Escoffier, J. Lang, and M. Ozturk, "Single-peaked consistency and its complexity".
@@ -207,7 +205,7 @@ def remove_cands(orders, cands_to_remove):
 # that are just the orders of the candidates with index 0 == most prefered.
 def order_vectors(rmaps):
   orders = []
-  rank_to_candidate = PreflibUtils.rankmap_convert_rank_to_candidate(rmaps)
+  rank_to_candidate = io.rankmap_convert_rank_to_candidate(rmaps)
   for c_map in rank_to_candidate:
     c_vote = []
     for i in sorted(c_map.keys()):
@@ -254,11 +252,11 @@ if __name__ == '__main__':
 
   ncand = 3
   nvoters = 100
-  candmap = GenProfiles.gen_cand_map(ncand)
-  #rmaps, rmapscounts = GenProfiles.gen_impartial_culture_strict(nvoters, cmap)
-  rankmaps, rankmapcounts = GenProfiles.gen_single_peaked_impartial_culture_strict(nvoters, candmap)
+  candmap = generate_profiles.gen_cand_map(ncand)
+  #rmaps, rmapscounts = generate_profiles.gen_impartial_culture_strict(nvoters, cmap)
+  rankmaps, rankmapcounts = generate_profiles.gen_single_peaked_impartial_culture_strict(nvoters, candmap)
 
-  PreflibUtils.pp_profile_toscreen(candmap, rankmaps, rankmapcounts)
+  io.pp_profile_toscreen(candmap, rankmaps, rankmapcounts)
 
   social_axis = is_single_peaked(rankmaps, candmap)
   if social_axis != []:
@@ -274,7 +272,7 @@ if __name__ == '__main__':
   for cfile in sorted(files):
     print("Testing: " + str(cfile))
     inf = open(cfile, "r")
-    candmap, rankmaps, rankmapcounts, numvoters = PreflibUtils.read_election_file(inf)
+    candmap, rankmaps, rankmapcounts, numvoters = io.read_election_file(inf)
     total += 1
     social_axis = is_single_peaked(rankmaps, candmap)
     if social_axis != []:

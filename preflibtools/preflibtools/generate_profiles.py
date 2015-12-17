@@ -1,5 +1,5 @@
 '''
-	File: 	GenProfiles.py
+	File: 	generate_profiles.py
 	Author:	Nicholas Mattei (nicholas.mattei@nicta.com.au)
 	Date:	Sept 11, 2013
 			November 6th, 2013
@@ -38,7 +38,7 @@
 About
 --------------------
 	This file generates voting profiles according to a given distribution.
-	It requires PreflibUtils to work properly.
+	It requires io to work properly.
 		
 '''
 import random
@@ -48,7 +48,7 @@ import copy
 import argparse
 import sys
 
-import PreflibUtils
+from preflibtools import io
 
 # Generator Functions
 
@@ -153,7 +153,7 @@ def gen_mallows_mix(nvoters, candmap, nref):
 	refs = []
 	for i in range(nref):
 		refm, refc = gen_impartial_culture_strict(1, candmap);
-		refs.append(PreflibUtils.rankmap_to_order(refm[0]))
+		refs.append(io.rankmap_to_order(refm[0]))
 		phis.append(round(random.random(), 5))
 		mix.append(random.randint(1,100))
 	smix = sum(mix)
@@ -364,14 +364,14 @@ if __name__ == '__main__':
 		
 		if results.interactive:
 			#Print the result to the screen
-			PreflibUtils.pp_profile_toscreen(cmap, rmaps, rmapscounts)		
+			io.pp_profile_toscreen(cmap, rmaps, rmapscounts)		
 					
 			#Write it out.
 			fname = str(input("\nWhere should I save the file:  "))
 			outf = open(fname, 'w')
-			PreflibUtils.write_map(cmap, nvoter, rankmap_to_voteset(rmaps, rmapscounts),outf)
+			io.write_map(cmap, nvoter, rankmap_to_voteset(rmaps, rmapscounts),outf)
 			outf.close()
 		else:
 			outf = open(base_path + base_file_name + str(i) + ".soc", 'w')
-			PreflibUtils.write_map(cmap, nvoter, rankmap_to_voteset(rmaps, rmapscounts),outf)
+			io.write_map(cmap, nvoter, rankmap_to_voteset(rmaps, rmapscounts),outf)
 			outf.close()
