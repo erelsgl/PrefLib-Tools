@@ -220,7 +220,7 @@ def rankmap_to_voteset(rankmaps, rankmapcounts):
 		#Decompose the rankmap into a string.
 		#Get number of elements
 		lenrank = max(cmap.values())
-		strlist = [""]*lenrank
+		strlist = ['']*lenrank
 		#place the candidates in their buckets
 		for i in sorted(cmap.keys()):
 			strlist[cmap[i]-1] += str(i) + ","
@@ -234,9 +234,9 @@ def rankmap_to_voteset(rankmaps, rankmapcounts):
 			else:
 				votestr += "{" + i + "},"
 		#Trim
-		votestr = votestr[:len(votestr)-1]
+		votestr = votestr[:len(votestr)-1].strip()
 		#insert into the map.
-		votemap[votestr] = rankmapcounts[n]
+		votemap[votestr] = votemap.get(votestr, 0) + rankmapcounts[n]
 	return votemap
 # Return a Tuple for a IC-Single Peaked... with alternatives in range 1....range.
 def gen_icsp_single_vote(alts):
