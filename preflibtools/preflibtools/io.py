@@ -65,15 +65,15 @@ def write_map(candmap, nvoters, votemap, file):
 # formats, return a list of rankmaps.
 def read_election_file(inputfile):
 	#first element is the number of candidates.
-	l = inputfile.readline()
+	l = inputfile.readline().decode()
 	numcands = int(l.strip())
 	candmap = {}
 	for i in range(numcands):
-		bits = inputfile.readline().strip().split(",")
+		bits = inputfile.readline().decode().strip().split(",")
 		candmap[int(bits[0].strip())] = bits[1].strip()
 	
 	#now we have numvoters, sumofvotecount, numunique orders
-	bits = inputfile.readline().strip().split(",")
+	bits = inputfile.readline().decode().strip().split(",")
 	numvoters = int(bits[0].strip())
 	sumvotes = int(bits[1].strip())
 	uniqueorders = int(bits[2].strip())
@@ -81,7 +81,7 @@ def read_election_file(inputfile):
 	rankmaps = []
 	rankmapcounts = []
 	for i in range(uniqueorders):
-		rec = inputfile.readline().strip()
+		rec = inputfile.readline().decode().strip()
 		#need to parse the rec properly..
 		if rec.find("{") == -1:
 			#its strict, just split on ,
