@@ -93,6 +93,7 @@ def gen_single_peaked_impartial_culture_strict(nvotes, candmap):
 		tvote = gen_icsp_single_vote(list(candmap.keys()))
 		voteset[tvote] = voteset.get(tvote, 0) + 1
 	return voteset_to_rankmap(voteset, candmap)
+	
 # Generate strict Urn
 
 def gen_urn_strict(nvotes, replace, candmap):
@@ -238,26 +239,24 @@ def rankmap_to_voteset(rankmaps, rankmapcounts):
 		#insert into the map.
 		votemap[votestr] = votemap.get(votestr, 0) + rankmapcounts[n]
 	return votemap
+	
 # Return a Tuple for a IC-Single Peaked... with alternatives in range 1....range.
 def gen_icsp_single_vote(alts):
-	return tuple(gen_icsp_recurse(0, len(alts)-1, alts))
-# Build up that vote....
-def gen_icsp_recurse(a, b, alts):
-	if a==b:
-		t = list()
-		t.append(alts[a])
-		return t
-	else: 
+	a = 0
+	b = len(alts)-1
+	temp = []
+	while a != b:
 		if random.randint(0,1) == 1:
-			temp = gen_icsp_recurse(a+1,b,alts)
 			temp.append(alts[a])
-			return temp
+			a += 1
 		else:
-			temp = gen_icsp_recurse(a, b-1, alts)
 			temp.append(alts[b])
-			return temp
+			b -= 1
+	temp.append(alts[a])
+	return tuple(temp[::-1]) # reverse
+			
 # Generate votes based on the URN Model..
-#we need numvotes with replace replacements.
+# we need numvotes with replace replacements.
 def gen_urn(numvotes, replace, alts):
 	voteMap = {}
 	ReplaceVotes = {}
