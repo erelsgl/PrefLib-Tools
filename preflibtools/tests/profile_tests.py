@@ -42,27 +42,33 @@
 
 '''
 
-from preflibtools import profile as p
+from preflibtools import profile
 
 def test_weighted_order():
   '''
     Test the code for the weighted pref order class.
   '''
   print("** test: Generating an empty instance")
-  order = p.WeightedPrefOrder()
+  order = profile.WeightedPreferenceOrder()
   print(order)
 
   print("** test: Simple instance")
-  order = p.WeightedPrefOrder(ranks={1: [1], 2: [3], 3: [2]})
+  order = profile.WeightedPreferenceOrder(ranks={1: [1], 2: [3], 3: [2]})
   print(order)
 
   print("** test: Ties instance")
-  order = p.WeightedPrefOrder(ranks={1: [1,4], 2: [3], 3: [2]})
+  order = profile.WeightedPreferenceOrder(ranks={1: [1,4], 2: [3], 3: [2]})
   print(order)
 
   print("** test: All")
-  order = p.WeightedPrefOrder(ranks={1: [1,4], 2: [3], 3: [2]}, weight=12.0, utilities={1: 12, 2: 15.0, 3: 2})
+  order = profile.WeightedPreferenceOrder(ranks={1: [1,4], 2: [3], 3: [2]}, weight=12.0, utilities={1: 12, 2: 15.0, 3: 2})
   print(order)
 
+  print("** Creating some profiles")
+  p = profile.WeightedOrderProfile()
+  print(p)
 
+  print("** Creating some profiles")
+  p = profile.WeightedOrderProfile(objects={1: "Candidate 1", 2: "Candidate 2"}, preferences={1: order, 2: order})
+  print(p)
 

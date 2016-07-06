@@ -3,7 +3,7 @@
 	Author:	Nicholas Mattei (nicholas.mattei@nicta.com.au)
 	Date:	April 4, 2013
 			November 6th, 2013
-	
+
   * Copyright (c) 2014, Nicholas Mattei and NICTA
   * All rights reserved.
   *
@@ -38,13 +38,17 @@ About
 --------------------
 	This file contains a set of useful modules for reading, writing, and converting
 	PrefLib files between the various formats.
-	
+
 '''
 
 import operator
 import itertools
 import math
 import copy
+
+
+def read_preflib_file(fname):
+
 
 
 # Given a candmap and a votemap, write the output in
@@ -60,8 +64,8 @@ def write_map(candmap, nvoters, votemap, file):
 	#Write the votes.. (sorted by count)
 	for vote, count in sorted(votemap.items(), key=lambda x: x[1], reverse=True):
 		file.write(str(count) + "," + vote + "\n")
-		
-# Given a file in one of the Preflib Election Data 
+
+# Given a file in one of the Preflib Election Data
 # formats, return a list of rankmaps.
 def read_election_file(inputfile):
 	#first element is the number of candidates.
@@ -71,13 +75,13 @@ def read_election_file(inputfile):
 	for i in range(numcands):
 		bits = inputfile.readline().strip().split(",")
 		candmap[int(bits[0].strip())] = bits[1].strip()
-	
+
 	#now we have numvoters, sumofvotecount, numunique orders
 	bits = inputfile.readline().strip().split(",")
 	numvoters = int(bits[0].strip())
 	sumvotes = int(bits[1].strip())
 	uniqueorders = int(bits[2].strip())
-	
+
 	rankmaps = []
 	rankmapcounts = []
 	for i in range(uniqueorders):
@@ -88,7 +92,7 @@ def read_election_file(inputfile):
 			count = int(rec[:rec.index(",")])
 			bits = rec[rec.index(",")+1:].strip().split(",")
 			cvote = {}
-			for crank in range(len(bits)): 
+			for crank in range(len(bits)):
 				cvote[int(bits[crank])] = crank+1
 			rankmaps.append(cvote)
 			rankmapcounts.append(count)
@@ -114,12 +118,12 @@ def read_election_file(inputfile):
 				 		crank += 1
 			rankmaps.append(cvote)
 			rankmapcounts.append(count)
-		
+
 	#Sanity check:
 	if sum(rankmapcounts) != sumvotes or len(rankmaps) != uniqueorders:
 		print("Error Parsing File: Votes Not Accounted For!")
 		exit()
-	
+
 	return candmap, rankmaps, rankmapcounts, numvoters
 
 # Given a pairwise map return the weighted and unweighted majority graphs.
@@ -138,7 +142,7 @@ def pairwise_to_relation(candmap, pairwisemap):
 			isTournament = False
 	unwmaj = {x: 1 for x in majrelation.keys()}
 	return majrelation, unwmaj, isTournament
-		
+
 # Given a candidate set and a vote map, pad all the votes by placing unranked
 # candidates tied at the end of the vote.
 def extend_partial_complete(candmap, votemap):
@@ -166,26 +170,26 @@ def extend_partial_complete(candmap, votemap):
 				tail = "{"
 				for x in candmap.keys():
 					if x not in voted:
-						tail += str(x) +"," 
+						tail += str(x) +","
 				tail = tail[:len(tail)-1]+"}"
 			else:
 				for x in candmap.keys():
 					if x not in voted:
-						tail += str(x) 
-			
+						tail += str(x)
+
 			#pop it on the end...
 			extended[cvote+","+tail] = (extended.get(cvote+","+tail, 0) + votemap[cvote])
 		else:
 			extended[cvote] = (extended.get(cvote, 0) + votemap[cvote])
-	
+
 	return extended
-	
+
 # Given a set of votes, return the pairwise
 # of all the candidates.
 def convert_to_pairwise(candmap, votemap):
 	#Generate a hash of all pairs of candidates
 	pairwisemap = {}
-	
+
 	ranklist = []
 	#Convert to a rankmap FIRST... not per pair...
 	for cvote in votemap.keys():
@@ -202,7 +206,7 @@ def convert_to_pairwise(candmap, votemap):
 				cand_rank[rank] = crank
 			crank+= 1
 		ranklist.append(cand_rank)
-	
+
 	#iterate over all combinations and check both directions.
 	for cpair in itertools.combinations(candmap.keys(), 2):
 		for cand_rank in ranklist:
@@ -212,9 +216,9 @@ def convert_to_pairwise(candmap, votemap):
 					pairwisemap[str(cpair[0])+","+str(cpair[1])] = (pairwisemap.get(str(cpair[0])+","+str(cpair[1]), 0) + votemap[cvote])
 				elif cand_rank[str(cpair[1])] < cand_rank[str(cpair[0])]:
 					pairwisemap[str(cpair[1])+","+str(cpair[0])] = (pairwisemap.get(str(cpair[1])+","+str(cpair[0]), 0) + votemap[cvote])
-		
+
 	return pairwisemap
-				
+
 # Given a set of verticies and names, write out the matching
 # data file format.
 def write_match(vertexmap, edges, file):
@@ -226,53 +230,21 @@ def write_match(vertexmap, edges, file):
 	#write the edges... sorted by numerical first element.
 	for ele in sorted(edges.keys(), key=lambda x: int(x.split(",")[0])):
 		file.write(str(ele) + "\n")
-		
+
 # Pretty printer for an election result.
 def pp_result_toscreen(candmap, scores):
 	print("\n\n{:^8}".format("n") + "|" + "{:^35}".format('Candidate') + "|" + "{:^35}".format('Score'))
-	print("{:-^75}".format(""))	
+	print("{:-^75}".format(""))
 	for s in sorted(scores, key=scores.get, reverse=True):
 		print("{:^8}".format(str(s)) + "|" +"{:^35}".format(str(candmap[s])) + "|" + "{:^35}".format(str(scores[s])))
 	return 0
-	
-# Pretty printer for a profile. Print 
-# the preflib format to the screen.
-def pp_profile_toscreen(candmap, rankmaps, rankmapcounts):
-	#Sort the rankmap/rankmapkey pair based on item frequency...
-	srmaps = [k for k, v in sorted(zip(rankmaps, rankmapcounts), key=operator.itemgetter(1), reverse=True)]
-	srmapc = [v for k, v in sorted(zip(rankmaps, rankmapcounts), key=operator.itemgetter(1), reverse=True)]	
-	
-	#pretty print the candidate map.
-	print("\n\n{:^8}".format("n") + "|" + "{:^35}".format('Candidate'))
-	print("{:-^75}".format(""))	
-	for ccand in candmap.keys():
-		print("{:^8}".format(str(ccand)) + "|" + "{:^35}".format(str(candmap[ccand])))
-	print("{:-^75}".format(""))	
-	#print the rank map and counts...
-	print("{:^8}".format("Count") + "|" + "{:^35}".format('Profile'))
-	for i in range(len(srmapc)):
-		outstr = ""
-		# Convert rankmap[i] to rorder which is rank --> candi
-		rorder = {x:[] for x in srmaps[i].values()}
-		for ccand in srmaps[i].keys():
-			rorder[srmaps[i][ccand]].append(ccand)
-			
-		for cr in sorted(rorder.keys()):
-			if len(rorder[cr]) > 1:
-				#assemble a multivote.
-				substr = "{"
-				for ccand in rorder[cr]:
-					substr += str(ccand) + ","
-				outstr += substr[:len(substr)-1] + "},"
-			else:
-				outstr += str(rorder[cr][0]) + ","
-		print("{:^8}".format(str(srmapc[i])) + "|" + "{:^35}".format(str(outstr[:len(outstr)-1])))
-	
+
+
 # Evaluate a vote for a given score vector.
 def evaluate_scoring_rule(candmap, rankmaps, rankmapcounts, scorevec):
 	if len(scorevec) != len(candmap):
 		print("Score Vector and Candidate Vector must have equal length")
-		exit()	
+		exit()
 	#initialize the score map.
 	scores = {x:0 for x in candmap.keys()}
 	#for each rank map, for each rank, multiply...
@@ -280,11 +252,11 @@ def evaluate_scoring_rule(candmap, rankmaps, rankmapcounts, scorevec):
 		for j in rankmaps[i].keys():
 			scores[j] += rankmapcounts[i] * scorevec[rankmaps[i][j]-1]
 	return scores
-	 
-# Relabel the candidates according to a given score vector so that 
+
+# Relabel the candidates according to a given score vector so that
 # the winner of the election is candidate 1.
 def relabel(candmap, rankmaps, rankmapcounts, scores):
-	
+
 	#basically, take the scores and make a candidate mapping old --> new
 	#then copy and modify the candmap and the rankmap... counts are the same...
 	cand_remapping = {}
@@ -293,26 +265,26 @@ def relabel(candmap, rankmaps, rankmapcounts, scores):
 		#highest score candidate goes to 1...
 		cand_remapping[s] = newnum
 		newnum += 1
-		
+
 	re_candmap = {cand_remapping[x]:candmap[x] for x in candmap.keys()}
-	
+
 	#same deal for the rankmaps....
 	re_rankmaps = []
 	for cmap in rankmaps:
 		re_rankmaps.append({cand_remapping[x]:cmap[x] for x in cmap.keys()})
-	
+
 	return re_candmap, re_rankmaps, rankmapcounts
-			
+
 # Relabel the candidates according to the most common complete order.
 # the winner of the election is candidate 1.
 def max_relabel(candmap, rankmaps, rankmapcounts):
-	
+
 	#find the rankmap with the max count AND it's complete...
 	relabelorder = 0
 	for x in sorted(rankmapcounts, reverse=True):
 		if len(rankmaps[rankmapcounts.index(x)]) == len(candmap):
 			relabelorder = rankmapcounts.index(x)
-	
+
 	#basically, take the scores and make a candidate mapping old --> new
 	#such that the most numerous complete vote is the ranking.
 	#then copy and modify the candmap and the rankmap... counts are the same...
@@ -322,16 +294,16 @@ def max_relabel(candmap, rankmaps, rankmapcounts):
 		#highest score candidate goes to 1...
 		cand_remapping[s] = newnum
 		newnum += 1
-		
+
 	re_candmap = {cand_remapping[x]:candmap[x] for x in candmap.keys()}
-	
+
 	#same deal for the rankmaps....
 	re_rankmaps = []
 	for cmap in rankmaps:
 		re_rankmaps.append({cand_remapping[x]:cmap[x] for x in cmap.keys()})
-	
+
 	return re_candmap, re_rankmaps, rankmapcounts
-		
+
 # Convert a rankmap to an order of candidate number...
 def rankmap_to_order(rm):
 	order = [-1]*len(rm.keys())
@@ -352,8 +324,46 @@ def rank_to_candidate_convert_to_rankmap(r_to_c):
 	for i in r_to_c:
 		r_m.append({v:k for k, v in i.items()})
 	return(r_m)
-	
-	
+
+
+
+''' DEPRICATED FUNCTIONS -- CLEAN OUT AT NEXT RELEASE '''
+
+# Pretty printer for a profile. Print
+# the preflib format to the screen.
+def pp_profile_toscreen(candmap, rankmaps, rankmapcounts):
+	#Sort the rankmap/rankmapkey pair based on item frequency...
+	srmaps = [k for k, v in sorted(zip(rankmaps, rankmapcounts), key=operator.itemgetter(1), reverse=True)]
+	srmapc = [v for k, v in sorted(zip(rankmaps, rankmapcounts), key=operator.itemgetter(1), reverse=True)]
+
+	#pretty print the candidate map.
+	print("\n\n{:^8}".format("ID") + "|" + "{:^35}".format('Candidate'))
+	print("{:-^75}".format(""))
+	for ccand in candmap.keys():
+		print("{:^8}".format(str(ccand)) + "|" + "{:^35}".format(str(candmap[ccand])))
+	print("{:-^75}".format(""))
+	#print the rank map and counts...
+	print("{:^8}".format("Count") + "|" + "{:^35}".format('Profile'))
+	for i in range(len(srmapc)):
+		outstr = ""
+		# Convert rankmap[i] to rorder which is rank --> candi
+		rorder = {x:[] for x in srmaps[i].values()}
+		for ccand in srmaps[i].keys():
+			rorder[srmaps[i][ccand]].append(ccand)
+
+		for cr in sorted(rorder.keys()):
+			if len(rorder[cr]) > 1:
+				#assemble a multivote.
+				substr = "{"
+				for ccand in rorder[cr]:
+					substr += str(ccand) + ","
+				outstr += substr[:len(substr)-1] + "},"
+			else:
+				outstr += str(rorder[cr][0]) + ","
+		print("{:^8}".format(str(srmapc[i])) + "|" + "{:^35}".format(str(outstr[:len(outstr)-1])))
+
+
+
 # Below is a template Main which shows off some of the
 # features of this library.
 if __name__ == '__main__':
@@ -362,14 +372,14 @@ if __name__ == '__main__':
 	inputfile = input("Input File: ")
 	inf = open(inputfile, 'r')
 	cmap, rmaps, rmapscounts, nvoters = read_election_file(inf)
-	
+
 	# Pretty print to screen:
 	pp_profile_toscreen(cmap, rmaps, rmapscounts)
-	
+
 	# Make a Borda scoring vector and evaluate the result.
 	m = len(cmap)
 	svec = [m - i for i in range(1,m+1)]
 	scores = evaluate_scoring_rule(cmap, rmaps, rmapscounts, svec)
-	
+
 	#Pretty print results
 	pp_result_toscreen(cmap, scores)

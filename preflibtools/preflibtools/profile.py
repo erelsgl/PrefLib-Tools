@@ -45,7 +45,7 @@
 
 '''
 
-class WeightedPrefOrder:
+class WeightedPreferenceOrder:
   '''
   Weighted Pref Order object which holds a weight, a mapping from
   ranks to elements, and possibly a utility.
@@ -72,11 +72,11 @@ class WeightedPrefOrder:
 
   def get_order_string(self):
     o = ""
-    for k in sorted(self.ranks.keys()):
-      if len(self.ranks[k]) == 1:
-        o += str(self.ranks[k][0]) + ","
+    for k,v in sorted(self.ranks.items()):
+      if len(v) == 1:
+        o += str(v[0]) + ","
       else:
-        o += "{" + ",".join([str(x) for x in self.ranks[k]]) + "}" + ","
+        o += "{" + ",".join([str(x) for x in v]) + "}" + ","
     o = o[:-1]
     return o
 
@@ -89,21 +89,48 @@ class WeightedPrefOrder:
     return "Weight: " + str(self.weight) + "\nOrder: " + self.get_order_string() + "\nUtilities: " + self.get_utilities_string()
 
 
-
-
-class Profile:
-  """
-  Profile object for PrefLib Tools.  This holds all
-  the information for an anonymous prefernce profile.
+class WeightedOrderProfile:
+  '''
+  Basic Profile object that uses a weighted pref order as it's internal
+  representation.
 
   Data
   -----------
   objects: dict
-    A mapping of object index --> name.  Hence the keys are
+    A mapping of object index (int) --> name.  Hence the keys are
     a list of all the ojects which one can have preference over.
 
-  prefs: array like
-    An array
+  preferences: WeightedPrefOrder:
+    A dict from ID --> weighted pref order object representing the preference
+    of a agent.
 
-'''
+  Notes
+  -----------
+  A possible future TODO is to collapse similar preferences, though
+  this can be achieved by using a weighted profile implemented
+  by whatever reader/writer we end up with.
+
+  '''
+  def __init__(self, objects={}, preferences={}):
+    self.objects = objects
+    self.preferences = preferences
+
+  def __repr__(self):
+    # Object Headder
+    o = "{:-^79}".format("") + "\n"
+    o += "{:^10}".format("ID") + "|" + "{:^30}".format('Objects') + "\n"
+    o += "{:-^79}".format("") + "\n"
+    for k,v in sorted(self.objects.items()):
+      o +="{:^10}".format(str(k)) + "|" + "{:^30}".format(str(v)) + "\n"
+    o += "{:-^79}".format("")
+
+    # Preferences
+    o += "\n" + "{:^10}".format("ID") + "|" + "{:^9}".format("Weight") + "|" + "{:^30}".format('Order') + "|" + "{:^30}".format('Utility') + "\n"
+    o += "{:-^79}".format("") + "\n"
+    for k,v in sorted(self.preferences.items()):
+      o += "{:^10}".format(str(k)) + "|" + "{:^9}".format(str(v.weight)) + "|" + "{:^30}".format(v.get_order_string()) + "|" + "{:^30}".format(v.get_utilities_string()) + "\n"
+    return o
+
+
+
 
