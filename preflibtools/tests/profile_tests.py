@@ -43,6 +43,7 @@
 '''
 
 from preflibtools import profile
+from preflibtools import io
 
 def test_weighted_order():
   '''
@@ -71,4 +72,15 @@ def test_weighted_order():
   print("** Creating some profiles")
   p = profile.WeightedOrderProfile(objects={1: "Candidate 1", 2: "Candidate 2"}, preferences={1: order, 2: order})
   print(p)
+
+def test_file_read():
+  p = io.read_weighted_preflib_file("/Users/Nick/repo/www-preflib.github/www/data/election/agh/ED-00009-00000001.soc")
+
+  print(p)
+
+  p = io.read_weighted_preflib_file("/Users/Nick/repo/www-preflib.github/www/data/election/glasgow/ED-00008-00000001.toc")
+
+  print(p)
+
+
 
