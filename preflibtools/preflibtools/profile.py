@@ -78,16 +78,29 @@ class WeightedPreferenceOrder:
   Order: {1,4},3,2
   Utilities: 
   
-  >>> WeightedPreferenceOrder(ranks={1: [1,4], 2: [3], 3: [2]}, weight=12.0, utilities={1: 12, 2: 15.0, 3: 2})   # All features
+  >>> p = WeightedPreferenceOrder(ranks={1: [1,4], 2: [3], 3: [2]}, weight=12.0, utilities={1: 12, 2: 15.0, 3: 2})   # All features
+  >>> p
   Weight: 12.0
   Order: {1,4},3,2
   Utilities: 12,15.0,2
+  >>> p.get_order_list()
+  [[1, 4], 3, 2]
+  >>> p.get_order_tuple()
+  ([1, 4], 3, 2)
+  >>> p.get_order_string()
+  '{1,4},3,2'
   '''
 
   def __init__(self, ranks={}, utilities={}, weight=0.0):
     self.ranks = ranks
     self.utilities = utilities
     self.weight = weight
+
+  def get_order_list(self):
+    return [v[0] if len(v)==1 else v     for k,v in sorted(self.ranks.items())]
+
+  def get_order_tuple(self):
+    return tuple(self.get_order_list())
 
   def get_order_string(self):
     o = ""
@@ -141,7 +154,10 @@ class WeightedOrderProfile:
 
   >>> pref1 = WeightedPreferenceOrder(ranks={1: [1], 2: [2], 3: [3]}, weight=12, utilities={1: 10, 2: 9, 3: 8})
   >>> pref2 = WeightedPreferenceOrder(ranks={1: [2], 2: [1], 3: [3]}, weight=15, utilities={1: 5, 2: 6, 3: 4})
-  >>> WeightedOrderProfile(objects={1: "Candidate 1", 2: "Candidate 2"}, preferences={1: pref1, 2: pref2})
+  >>> profile = WeightedOrderProfile(objects={1: "Candidate 1", 2: "Candidate 2"}, preferences={1: pref1, 2: pref2})
+  >>> profile.get_map_from_order_to_weight()
+  {(2, 1, 3): 15, (1, 2, 3): 12}
+  >>> profile
   -------------------------------------------------------------------------------
       ID    |           Objects            
   -------------------------------------------------------------------------------
@@ -157,6 +173,12 @@ class WeightedOrderProfile:
   def __init__(self, objects={}, preferences={}):
     self.objects = objects
     self.preferences = preferences
+    
+  def get_map_from_order_to_weight(self) -> dict:
+    """
+    Returns a dict that maps each possible ranking (a tuple) to its weight.
+    """
+    return {v.get_order_tuple(): v.weight    for k,v in self.preferences.items()}
 
   def __repr__(self):
     # Object Headder
