@@ -421,14 +421,17 @@ def pp_profile_toscreen(candmap, rankmaps, rankmapcounts):
         outstr += str(rorder[cr][0]) + ","
     print("{:^8}".format(str(srmapc[i])) + "|" + "{:^35}".format(str(outstr[:len(outstr)-1])))
 
-
+    
 
 # Below is a template Main which shows off some of the
 # features of this library.
 if __name__ == '__main__':
 
   # Grab and read a file.
-  inputfile = input("Input File: ")
+  inputfile = "../../preflibdata/ED-00004-00000001.soc"
+  p = read_weighted_preflib_file(inputfile)
+  print(p)
+  
   inf = open(inputfile, 'r')
   cmap, rmaps, rmapscounts, nvoters = read_election_file(inf)
 
