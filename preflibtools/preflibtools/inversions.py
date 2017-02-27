@@ -9,14 +9,14 @@ Date:    2017-02
 import functools
 
 @functools.lru_cache(maxsize=None)
-def numNPermutationsWithAtMostKInversions(N:int, K:int) -> int:
+def numNPermutationsWithAtMostKInversions(N: int, K: int) -> int:
 	"""
 	Return the number of n-element permutations with at most k inverted pairs.
 	"""
 	return sum([numNPermutationsWithKInversions(N,i) for i in range(K+1)])
 
 @functools.lru_cache(maxsize=None)
-def numNPermutationsWithKInversions(N:int,K:int):
+def numNPermutationsWithKInversions(N: int, K: int) -> int:
 	"""
 	Return the Mahonian number T(N,K) --- the number of n-element permutations with exactly k inverted pairs.
 
@@ -49,7 +49,7 @@ def numNPermutationsWithKInversions(N:int,K:int):
 	return val;
 
 
-def inversionDistance(A,B):
+def inversionDistance(A: list, B: list) -> int:
 	"""
 	INPUT: two lists, A and B. Must have the same size and the same set of elements.
 
@@ -92,7 +92,7 @@ def inversionDistance(A,B):
 	return sortCount(renamedB)[1]
 
 
-def sortCount(A):
+def sortCount(A: list) -> (list,int):
 	"""
 	Author: Shawn Ohare, http://www.shawnohare.com/2013/08/counting-inversions-in-python.html
 
@@ -124,7 +124,7 @@ def sortCount(A):
 		return A, 0
 
 
-def mergeCount(A,B):
+def mergeCount(A: list, B: list) -> (list,int):
 	""" Subroutine of sortCount """
 	count = 0
 	M = []
