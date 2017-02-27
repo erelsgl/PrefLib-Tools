@@ -7,6 +7,7 @@ Date:    2017-02
 """
 
 import functools
+from typing import Sequence
 
 @functools.lru_cache(maxsize=None)
 def numNPermutationsWithAtMostKInversions(N: int, K: int) -> int:
@@ -49,20 +50,20 @@ def numNPermutationsWithKInversions(N: int, K: int) -> int:
 	return val;
 
 
-def inversionDistance(A: list, B: list) -> int:
+def inversionDistance(A: Sequence, B: Sequence) -> int:
 	"""
-	INPUT: two lists, A and B. Must have the same size and the same set of elements.
+	INPUT: two lists/tuples, A and B. Must have the same size and the same set of elements.
 
 	OUTPUT: The number of adjacent-inversions required to change A to B.
 
 
 	>>> inversionDistance([1,2,3],[1,2,3])
 	0
-	>>> inversionDistance([1,2,3],[1,3,2])
+	>>> inversionDistance((1,2,3),(1,3,2))
 	1
-	>>> inversionDistance([1,2,3],[2,3,1])
+	>>> inversionDistance([1,2,3],(2,3,1))
 	2
-	>>> inversionDistance([1,2,3],[3,2,1])
+	>>> inversionDistance((1,2,3),[3,2,1])
 	3
 	>>> inversionDistance([1,3,2],[3,1,2])
 	1
@@ -92,7 +93,7 @@ def inversionDistance(A: list, B: list) -> int:
 	return sortCount(renamedB)[1]
 
 
-def sortCount(A: list) -> (list,int):
+def sortCount(A: Sequence) -> (Sequence,int):
 	"""
 	Author: Shawn Ohare, http://www.shawnohare.com/2013/08/counting-inversions-in-python.html
 
@@ -124,7 +125,7 @@ def sortCount(A: list) -> (list,int):
 		return A, 0
 
 
-def mergeCount(A: list, B: list) -> (list,int):
+def mergeCount(A: Sequence, B: Sequence) -> (Sequence,int):
 	""" Subroutine of sortCount """
 	count = 0
 	M = []

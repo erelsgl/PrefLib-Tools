@@ -311,6 +311,16 @@ def gen_urn(numvotes, numreplace, alternatives):
   
   OUTPUT:
   * voteMap - dict from tuples to ints: maps tuples that represent rankings, to the number of times it appears in the profile.
+  
+  >>> voteMap = gen_urn(200, 0, [10,20,30])
+  >>> len(voteMap)   # should be 3! = num of different strict rankings.
+  6
+  >>> type(voteMap)
+  <class 'dict'>
+  >>> voteMap[(10,20,30)] > 0
+  True
+  >>> voteMap[(30,20,10)] > 0
+  True
   """
   voteMap = {}
   ReplaceVotes = {}

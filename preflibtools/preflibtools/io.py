@@ -127,6 +127,16 @@ def write_map(candmap, nvoters, votemap, file):
 # Given a file in one of the Preflib Election Data
 # formats, return a list of rankmaps.
 def read_election_file(inputfile):
+  """
+  INPUT: inputfile, a file-object. 
+  Should be open and point to a file in the PrefLib Election Data format, "ED-*.*".
+  
+  OUTPUT:
+  * candmap       - dict, maps candidate-id to candidate-name.
+  * rankmaps      - list of dicts, each of which represents a ranking (maps candidate to rank).
+  * rankmapcounts - list of ints,  each of them represents the frequency of the above rankings.
+  * numvoters     - int, total number of voters.
+  """
   #first element is the number of candidates.
   l = inputfile.readline()
   numcands = int(l.strip())
@@ -180,8 +190,7 @@ def read_election_file(inputfile):
 
   #Sanity check:
   if sum(rankmapcounts) != sumvotes or len(rankmaps) != uniqueorders:
-    print("Error Parsing File: Votes Not Accounted For!")
-    exit()
+    raise ValueError("Error Parsing File: Votes Not Accounted For!")
 
   return candmap, rankmaps, rankmapcounts, numvoters
 
@@ -429,8 +438,10 @@ if __name__ == '__main__':
 
   # Grab and read a file.
   inputfile = "../../preflibdata/ED-00004-00000001.soc"
+  print("read_election_file", read_election_file(open(inputfile, 'r')))
+  
   p = read_weighted_preflib_file(inputfile)
-  print(p)
+  print("read_weighted_preflib_file", p)
   
   inf = open(inputfile, 'r')
   cmap, rmaps, rmapscounts, nvoters = read_election_file(inf)
