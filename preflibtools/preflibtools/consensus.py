@@ -11,7 +11,7 @@ Date:    2017-02
 
 import numpy as  np
 from collections import defaultdict,Counter
-import inversions
+from preflibtools import inversions
 import operator
 
 __DEBUG__ = False
@@ -111,16 +111,3 @@ if __name__ == "__main__":
 	import doctest
 	doctest.testmod()
 	print("Doctest OK!\n")
-
-	__DEBUG__ = True
-	
-	from preflibtools import io
-	profile = io.read_weighted_preflib_file("../../preflibdata/ED-00004-00000001.soc").get_map_from_order_to_weight()
-	print("Profile:", profile)
-	print("Level-1 consensus:", getLevel1Consensus(profile))
-	print("Weak    consensus:", getLevel1Consensus(profile, weak=True))
-
-	profile = io.read_weighted_preflib_file("../../preflibdata/ED-00011-00000001.soc").get_map_from_order_to_weight()
-	print("Profile:", profile)
-	print("Level-1 consensus:", getLevel1Consensus(profile))
-	print("Weak    consensus:", getLevel1Consensus(profile, weak=True))

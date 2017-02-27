@@ -39,7 +39,17 @@
 About
 --------------------
   This file generates voting profiles according to a given distribution.
-  It requires io to work properly.
+  
+  Available distributions are:
+  
+  * Impartial Culture --- gen_impartial_culture_strict, gen_urn
+  * Impartial Anonymous Culture --- gen_impartial_aynonmous_culture_strict, gen_urn
+  * Urn Culture with Replacement --- gen_urn_culture_strict, gen_urn_strict, gen_urn
+  * Single-Peaked Impartial Culture --- gen_single_peaked_impartial_culture_strict, gen_icsp
+  * Mallows       --- gen_mallows
+  * Mallows mix   --- gen_mallows_mix
+  
+  
 
 '''
 import random
@@ -92,7 +102,7 @@ def gen_impartial_culture_strict(numvotes, candmap):
   >>> len(rmapscounts)
   6
   """
-  voteset = gen_urn(numvotes, numreplace=0, alternatives=candmap.keys())   # a map from ranking-tuples to num-of-occurences in the profile.
+  voteset = gen_urn(numvotes, numreplace=0, alternatives=candmap.keys())
   return voteset_to_rankmap(voteset)
 
 # Generate an Impartial Anonymous Culture profile
@@ -109,10 +119,7 @@ def gen_urn_culture_strict(numvotes, numreplace, candmap):
 
 # Generate an SinglePeakedImpartialCulture vote set.
 def gen_single_peaked_impartial_culture_strict(numvotes, candmap):
-  voteset = {}
-  for i in range(numvotes):
-    tvote = gen_icsp_single_vote(list(candmap.keys()))  # returns a tuple representing a rank
-    voteset[tvote] = voteset.get(tvote, 0) + 1
+  voteset = gen_icsp(numvotes, list(candmap.keys()))
   return voteset_to_rankmap(voteset)
 
 # Generate strict Urn
@@ -120,53 +127,34 @@ def gen_single_peaked_impartial_culture_strict(numvotes, candmap):
 def gen_urn_strict(numvotes, numreplace, candmap):
   voteset = gen_urn(numvotes, numreplace, candmap.keys())
   return voteset_to_rankmap(voteset)
-
-# Generate a Mallows model with the various mixing parameters passed in
-# nvoters is the number of votes we need.
-# candmap is a dictionary that maps candidate id to candidate name.
-# mix is an array such that sum(mix) == 1 and describes the distro over the models
-# phis is an array len(phis) = len(mix) = len(refs) that is the phi for the particular model
-# refs is an array of dicts that describe the reference ranking for the set.
-def gen_mallows(nvoters, candmap, mix, phis, refs):
-  if len(mix) != len(phis) or len(phis) != len(refs):
-    print("Mix != Phis != Refs")
-    exit()
-
-  #Precompute the distros for each Phi and Ref.
-  #Turn each ref into an order for ease of use...
-  m_insert_dists = []
-  for i in range(len(mix)):
-    m_insert_dists.append(compute_mallows_insertvec_dist(len(candmap), phis[i]))
-
-  #Now, generate votes...
-  votemap = {}
-  for cvoter in range(nvoters):
-    #print("drawing")
-    cmodel = draw(list(range(len(mix))), mix)
-    #print(cmodel)
-    #print(refs[cmodel])
-    #Generate a vote for the selected model
-    insvec = [0] * len(candmap)
-    for i in range(1, len(insvec)+1):
-      #options are 1...max
-      #print("Options: " + str(list(range(1, i+1))))
-      #print("Dist: " + str(insertvec_dist[i]))
-      #print("Drawing on model " + str(cmodel))
-      insvec[i-1] = draw(list(range(1, i+1)), m_insert_dists[cmodel][i])
-    vote = []
-    for i in range(len(refs[cmodel])):
-      vote.insert(insvec[i]-1, refs[cmodel][i])
-    #print("mallows vote: " + str(vote))
-    tvote = tuple(vote)
-    votemap[tuple(vote)] = votemap.get(tuple(vote), 0) + 1
-
-  return voteset_to_rankmap(votemap, candmap)
-
-# Generate Mallows with a particular number of reference rankings and phi's drawn iid.
-def gen_mallows_mix(nvoters, candmap, nref):
+  
+def gen_mallows(numvotes, candmap, mix, phis, refs):
   """
   INPUT:
-  nvoters - int, number of votes to generate.
+  numvotes - int, number of votes to generate.
+  candmap - dict, maps candidate id to candidate name.
+  mix     - list of float, summing to 1. Probability distribution over Mallows models with different references.
+  phis    - list of float, parameter of Mallows function for each reference.
+  refs    - list of lists, the reference ("correct") rankings.
+  
+  OUTPUT:
+  rmap, rmapcount - represent a preference profile.
+ 
+  >>> rmap,rmapcount = gen_mallows(1000, {1:"Alice",2:"Bob",3:"Carl"}, [1.0], [0.5], [[1,2,3]])
+  >>> len(rmap)    # should be 3! - number of possible rankings.
+  6
+  >>> len(rmapcount)
+  6
+  """
+  voteset = gen_mallows_voteset(numvotes, list(candmap.keys()), mix, phis, refs)
+  return voteset_to_rankmap(voteset, candmap)
+
+
+# Generate Mallows with a particular number of reference rankings and phi's drawn iid.
+def gen_mallows_mix(numvotes, candmap, nref):
+  """
+  INPUT:
+  numvotes - int, number of votes to generate.
   candmap - dict, maps candidate id to candidate name.
   nref    - int number of reference-rankings.
   
@@ -189,7 +177,63 @@ def gen_mallows_mix(nvoters, candmap, nref):
   # Normalize mix to 1:
   smix = sum(mix)
   mix = [float(i) / float(smix) for i in mix]  
-  return gen_mallows(nvoters, candmap, mix, phis, refs)
+  return gen_mallows(numvotes, candmap, mix, phis, refs)
+
+
+def gen_mallows_voteset(numvotes, alternatives, mix, phis, refs):
+  """
+  INPUT:
+  numvotes - int, number of votes to generate.
+  alternatives - list of alternatives.
+  mix     - list of float, summing to 1. Probability distribution over Mallows models with different references.
+  phis    - list of float, parameter of Mallows function for each reference.
+  refs    - list of lists, the reference ("correct") rankings.
+  
+  OUTPUT:  dict, represents a profile, maps preferences (tuples) to their frequency in the profile.
+  
+  >>> voteset = gen_mallows_voteset(100, {1:"Alice",2:"Bob",3:"Carl"}, [1.0], [0.5], [[1,2,3]])
+  >>> len(voteset)    # should be 3! - number of possible rankings.
+  6
+  """
+  numrefs = len(refs)
+  if len(mix) != numrefs or len(phis) != numrefs:
+    raise ValueError("mix, phis and refs must be lists of the same length")
+
+  #Precompute the distros for each Phi and Ref.
+  #Turn each ref into an order for ease of use...
+  m_insert_dists = []
+  for i in range(numrefs):
+    m_insert_dists.append(compute_mallows_insertvec_dist(len(alternatives), phis[i]))
+    
+  #print("m_insert_dists",m_insert_dists)
+
+  #Now, generate votes...
+  votemap = {}
+  for cvoter in range(numvotes):
+    #print("drawing")
+    cmodel = draw(range(numrefs), mix)
+    #print("cmodel", cmodel)
+    ref = refs[cmodel]
+    #print("ref", ref)
+    insertvec_dist = m_insert_dists[cmodel]
+    
+    #Generate a vote for the selected model
+    insvec = [0] * len(alternatives)
+    for i in range(1, len(insvec)+1):
+      options = list(range(1, i+1))
+      #options are 1...max
+      #print("Options: " + str(options))
+      #print("Dist: " + str(insertvec_dist[i]))
+      #print("Drawing on model " + str(cmodel))
+      insvec[i-1] = draw(options, insertvec_dist[i])
+    #print("insvec",insvec)
+    vote = []
+    for i in range(len(ref)):
+      vote.insert(insvec[i]-1, ref[i])
+    #print("mallows vote: " + str(vote))
+    tvote = tuple(vote)
+    votemap[tvote] = votemap.get(tvote, 0) + 1
+  return votemap
 
 
 #  Helper Functions -- Actual Generators -- Don't call these directly.
@@ -200,11 +244,9 @@ def draw(values, distro):
   #This is a bit hacked together -- only need that the distribution
   #sums to 1.0 within 5 digits of rounding.
   if round(sum(distro),5) != 1.0:
-    print("Input Distro is not a Distro...")
-    print(str(distro) + "  Sum: " + str(sum(distro)))
-    exit()
+    raise ValueError("Input Distro is not a Distro...\n"+str(distro) + "  Sum: " + str(sum(distro)))
   if len(distro) != len(values):
-    print("Values and Distro have different length")
+    raise ValueError("Values and Distro have different length")
 
   cv = 0
   draw = random.random() - distro[cv]
@@ -212,6 +254,8 @@ def draw(values, distro):
     cv+= 1
     draw -= distro[cv]
   return values[cv]
+  
+  
 # For Phi and a given number of candidates, compute the
 # insertion probability vectors.
 def compute_mallows_insertvec_dist(ncand, phi):
@@ -283,7 +327,7 @@ def rankmap_to_voteset(rankmaps, rankmapcounts):
     votemap[votestr] = votemap.get(votestr, 0) + rankmapcounts[n]
   return votemap
 
-# Return a Tuple for a IC-Single Peaked... with alternatives in range 1....range.
+# Return a Tuple for an Impartial-Culture-Single-Peaked... with alternatives in range 1....range.
 def gen_icsp_single_vote(alternatives):
   a = 0
   b = len(alternatives)-1
@@ -297,6 +341,34 @@ def gen_icsp_single_vote(alternatives):
       b -= 1
   temp.append(alternatives[a])
   return tuple(temp[::-1]) # reverse
+
+
+def gen_icsp(numvotes, alternatives):
+  """
+  Generate single-peaked votes based on Impartial-Culture assumption.
+
+  INPUT:
+  * numvotes -         int, total number of voters.
+  * alternatives  -    list, codes of alternatives (aka candidates)
+  
+  OUTPUT:
+  * voteMap - dict from tuples to ints: maps tuples that represent rankings, to the number of times it appears in the profile.
+  
+  >>> voteMap = gen_urn(200, 0, [10,20,30])
+  >>> len(voteMap)   # should be 3! = num of different strict rankings.
+  6
+  >>> type(voteMap)
+  <class 'dict'>
+  >>> voteMap[(10,20,30)] > 0
+  True
+  >>> voteMap[(30,20,10)] > 0
+  True
+  """
+  voteset = {}
+  for i in range(numvotes):
+    tvote = gen_icsp_single_vote(alternatives)  # returns a tuple representing a rank
+    voteset[tvote] = voteset.get(tvote, 0) + 1
+  return voteset
 
 # Generate votes based on the URN Model.
 # we need numvotes votes with numreplace replacements.

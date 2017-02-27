@@ -46,6 +46,11 @@ import re
 import math
 import copy
 
+def num(s: str):
+    """ convert a string to either an int or a float """
+    try: return int(s)
+    except ValueError: return float(s)
+
 
 def read_weighted_preflib_file(fname):
   """
@@ -100,7 +105,7 @@ def read_weighted_preflib_file(fname):
       for i,o in enumerate(lines):
         cleaned = re.sub("(\{[1-9,]*\})", lambda x:x.group(0).replace(',',' '),o)
         bits = cleaned.strip().split(",")
-        weight = bits[0]
+        weight = num(bits[0])
         ranks = {}
         for j,r in enumerate(bits[1:]):
           if "{" in r:

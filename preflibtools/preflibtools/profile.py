@@ -89,12 +89,22 @@ class WeightedPreferenceOrder:
   ([1, 4], 3, 2)
   >>> p.get_order_string()
   '{1,4},3,2'
+  >>> p.num_of_alternatives()
+  4
   '''
 
   def __init__(self, ranks={}, utilities={}, weight=0.0):
     self.ranks = ranks
     self.utilities = utilities
     self.weight = weight
+    
+  def alternatives(self) -> list:
+    return sum(self.ranks.values(),[])   # http://stackoverflow.com/a/952946/827927
+    
+  def num_of_alternatives(self):
+    return len(self.alternatives())
+               
+    return len(sum(self.ranks.values(),[]))
 
   def get_order_list(self):
     return [v[0] if len(v)==1 else v     for k,v in sorted(self.ranks.items())]
@@ -157,6 +167,8 @@ class WeightedOrderProfile:
   >>> profile = WeightedOrderProfile(objects={1: "Candidate 1", 2: "Candidate 2"}, preferences={1: pref1, 2: pref2})
   >>> profile.get_map_from_order_to_weight()
   {(2, 1, 3): 15, (1, 2, 3): 12}
+  >>> profile.num_of_alternatives()
+  3
   >>> profile
   -------------------------------------------------------------------------------
       ID    |           Objects            
@@ -173,6 +185,10 @@ class WeightedOrderProfile:
   def __init__(self, objects={}, preferences={}):
     self.objects = objects
     self.preferences = preferences
+    
+  def num_of_alternatives(self):
+    for pref in self.preferences.values():
+      return pref.num_of_alternatives()
     
   def get_map_from_order_to_weight(self) -> dict:
     """
