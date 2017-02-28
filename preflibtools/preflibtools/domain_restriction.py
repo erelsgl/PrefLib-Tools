@@ -78,9 +78,30 @@ def is_single_peaked(rmaps, candmap):
   for current in rmaps:
       if len(current) != numcandidates:
         raise ValueError("is_single_peaked called with non-strict preferences")
-
   orders = order_vectors(rmaps)      # list of lists, each of which represents a linear ranking.
-  fullorders = order_vectors(rmaps)  
+  return is_single_peaked_orders(orders)
+  
+
+def is_single_peaked_orders(orders):
+  """
+  INPUT:
+  orders - list, each item is a list representing a linear order.
+  
+  OUTPUT: list:
+  * If the profile is single-peaked - it is the "social axis".
+  * Otherwise - it is an empty list []
+  
+  >>> is_single_peaked_orders([[1,2,3]]) is not None
+  True
+  >>> is_single_peaked_orders([[1,2,3],[3,2,1]]) 
+  [1, 2, 3]
+  >>> is_single_peaked_orders([[3,2,1],[1,2,3]]) 
+  [1, 2, 3]
+  >>> is_single_peaked_orders([[3,2,1],[1,2,3],[1,3,2]])
+  []
+  """
+  orders = list(orders)
+  fullorders = copy.deepcopy(orders) 
 
   #Build the order...
   leftside = []

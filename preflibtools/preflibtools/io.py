@@ -384,12 +384,19 @@ def rankmap_to_order(rm):
     order[rm[i]-1] = i
   return order
 
-# Convert a set of rankmap to be a mapping from Rank --> Candidate
+# Convert a mapping from Candidate-->Rank to a mapping from Rank-->Candidate
 def rankmap_convert_rank_to_candidate(rmaps):
-  rank_to_cand = []
-  for i in rmaps:
-    rank_to_cand.append({v:k for k, v in i.items()})
-  return(rank_to_cand)
+  """
+  INPUT:  rmaps - list, each item is a map mapping candidate ids to their ranks.
+  
+  OUTPUT: list, each item is a list with the candidate ids in their rank order.
+  
+  >>> rankmap_convert_rank_to_candidate([{10:1,20:2,30:3}])
+  [{1: 10, 2: 20, 3: 30}]
+  >>> rankmap_convert_rank_to_candidate([{10:1,20:3,30:2}, {10:3,20:1,30:2}])
+  [{1: 10, 2: 30, 3: 20}, {1: 20, 2: 30, 3: 10}]
+  """
+  return [{v:k for k, v in rmap.items()}   for   rmap in rmaps]
 
 #Convert a set of rank_to_candidate back to a set of rankmaps.
 def rank_to_candidate_convert_to_rankmap(r_to_c):
@@ -440,6 +447,10 @@ def pp_profile_toscreen(candmap, rankmaps, rankmapcounts):
 # Below is a template Main which shows off some of the
 # features of this library.
 if __name__ == '__main__':
+  import doctest
+  doctest.testmod()
+  print("Doctest OK!\n")
+
 
   # Grab and read a file.
   inputfile = "../../preflibdata/ED-00004-00000001.soc"

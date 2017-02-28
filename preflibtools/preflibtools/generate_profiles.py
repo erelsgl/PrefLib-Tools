@@ -127,27 +127,6 @@ def gen_single_peaked_impartial_culture_strict(numvotes, candmap):
 def gen_urn_strict(numvotes, numreplace, candmap):
   voteset = gen_urn(numvotes, numreplace, candmap.keys())
   return voteset_to_rankmap(voteset)
-  
-def gen_mallows(numvotes, candmap, mix, phis, refs):
-  """
-  INPUT:
-  numvotes - int, number of votes to generate.
-  candmap - dict, maps candidate id to candidate name.
-  mix     - list of float, summing to 1. Probability distribution over Mallows models with different references.
-  phis    - list of float, parameter of Mallows function for each reference.
-  refs    - list of lists, the reference ("correct") rankings.
-  
-  OUTPUT:
-  rmap, rmapcount - represent a preference profile.
- 
-  >>> rmap,rmapcount = gen_mallows(1000, {1:"Alice",2:"Bob",3:"Carl"}, [1.0], [0.5], [[1,2,3]])
-  >>> len(rmap)    # should be 3! - number of possible rankings.
-  6
-  >>> len(rmapcount)
-  6
-  """
-  voteset = gen_mallows_voteset(numvotes, list(candmap.keys()), mix, phis, refs)
-  return voteset_to_rankmap(voteset, candmap)
 
 
 # Generate Mallows with a particular number of reference rankings and phi's drawn iid.
@@ -178,6 +157,28 @@ def gen_mallows_mix(numvotes, candmap, nref):
   smix = sum(mix)
   mix = [float(i) / float(smix) for i in mix]  
   return gen_mallows(numvotes, candmap, mix, phis, refs)
+
+  
+def gen_mallows(numvotes, candmap, mix, phis, refs):
+  """
+  INPUT:
+  numvotes - int, number of votes to generate.
+  candmap - dict, maps candidate id to candidate name.
+  mix     - list of float, summing to 1. Probability distribution over Mallows models with different references.
+  phis    - list of float, parameter of Mallows function for each reference.
+  refs    - list of lists, the reference ("correct") rankings.
+  
+  OUTPUT:
+  rmap, rmapcount - represent a preference profile.
+ 
+  >>> rmap,rmapcount = gen_mallows(1000, {1:"Alice",2:"Bob",3:"Carl"}, [1.0], [0.5], [[1,2,3]])
+  >>> len(rmap)    # should be 3! - number of possible rankings.
+  6
+  >>> len(rmapcount)
+  6
+  """
+  voteset = gen_mallows_voteset(numvotes, list(candmap.keys()), mix, phis, refs)
+  return voteset_to_rankmap(voteset, candmap)
 
 
 def gen_mallows_voteset(numvotes, alternatives, mix, phis, refs):
