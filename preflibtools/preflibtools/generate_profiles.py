@@ -216,7 +216,7 @@ def gen_mallows_voteset(numvotes, alternatives, mix, phis, refs):
     #print("cmodel", cmodel)
     ref = refs[cmodel]
     #print("ref", ref)
-    insertvec_dist = m_insert_dists[cmodel]
+    insertvec_dist = m_insert_dists[cmodel]   # the probabilities of Mallows model. A dict from int to discrete probability distribution.
     
     #Generate a vote for the selected model
     insvec = [0] * len(alternatives)
@@ -259,7 +259,27 @@ def draw(values, distro):
   
 # For Phi and a given number of candidates, compute the
 # insertion probability vectors.
-def compute_mallows_insertvec_dist(ncand, phi):
+def compute_mallows_insertvec_dist(ncand:int, phi:float) -> dict:
+  """
+  INPUT:
+  ncand - int, number of candidates (alternativcs).
+  phi   - float, parameter of the Mallows distribution.
+  
+  OUTPUT: dict, maps int to discrete probability distribution (a list of floats whose sum is 1)
+  
+  >>> compute_mallows_insertvec_dist(3, 1)
+  {1: [1.0], 2: [0.5, 0.5], 3: [0.3333333333333333, 0.3333333333333333, 0.3333333333333333]}
+  >>> compute_mallows_insertvec_dist(3, 0.5)
+  {1: [1.0], 2: [0.3333333333333333, 0.6666666666666666], 3: [0.14285714285714285, 0.2857142857142857, 0.5714285714285714]}
+  >>> compute_mallows_insertvec_dist(3, 1/3)
+  {1: [1.0], 2: [0.25, 0.75], 3: [0.07692307692307691, 0.23076923076923075, 0.6923076923076923]}
+  >>> compute_mallows_insertvec_dist(3, 0)
+  {1: [1.0], 2: [0.0, 1.0], 3: [0.0, 0.0, 1.0]}
+  >>> compute_mallows_insertvec_dist(4, 0.5)
+  {1: [1.0], 2: [0.3333333333333333, 0.6666666666666666], 3: [0.14285714285714285, 0.2857142857142857, 0.5714285714285714], 4: [0.06666666666666667, 0.13333333333333333, 0.26666666666666666, 0.5333333333333333]}
+  >>> compute_mallows_insertvec_dist(4, 1/3)
+  {1: [1.0], 2: [0.25, 0.75], 3: [0.07692307692307691, 0.23076923076923075, 0.6923076923076923], 4: [0.024999999999999994, 0.075, 0.225, 0.675]}
+  """
   #Compute the Various Mallows Probability Distros
   vec_dist = {}
   for i in range(1, ncand+1):
