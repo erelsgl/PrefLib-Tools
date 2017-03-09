@@ -325,7 +325,7 @@ if __name__ == '__main__':
     print("Not Single Peaked")
 
   # Test all the SOC's... for fun....
-  files = glob.glob("../../preflibdata/*.soc")
+  files = glob.glob("./soc/*.soc")
   total = 0
   totalSP = 0
   for cfile in sorted(files):
