@@ -119,25 +119,28 @@ def probabilityOfCondorcetWinner(numvoters:int) -> float:
 
 def plot_prob_vs_phi(results: DataFrame, ax, numvotes:int, numalternatives:int, legend:bool):
 	#ax.set_title("probability vs. phi, "+str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 10, weight='bold')
-	ax.set_title(str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 10, weight='bold')
-	results1 = results[results['numvotes']==numvotes][results['numalternatives']==numalternatives]
-	#results1.to_csv("results/"+filename+".2.csv")
+	ax.set_title(str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 15, weight='bold')
+	results1 = results.query("numvotes=="+str(numvotes)+" and numalternatives=="+str(numalternatives))
 	
-	results1.plot(x='phi',y='consensus prob', ax=ax, legend=legend, style=['r^-'])
-	results1.plot(x='phi',y='single-peaked prob', ax=ax, legend=legend, style=['b--'])
-	results1.plot(x='phi',y='weak consensus prob', ax=ax, legend=legend, style=['go-'])
+	results1.plot(x='phi', y='weak consensus %', ax=ax, legend=legend, style=['go-'])
+	results1.plot(x='phi', y='single-peaked %', ax=ax, legend=legend, style=['b--'])
+	results1.plot(x='phi', y='consensus %', ax=ax, legend=legend, style=['r^-'])
+	ax.set_xlabel('phi', fontsize=15)
+	ax.set_ylabel('% exists', fontsize=15)
 
 
 def plots(results: DataFrame):
-	results['consensus prob'] = results.apply ( \
-		lambda row: row['consensus']/row['iterations'], \
+	results['consensus %'] = results.apply ( \
+		lambda row: 100*row['consensus']/row['iterations'], \
 		axis=1)
-	results['weak consensus prob'] = results.apply ( \
-		lambda row: row['weak consensus']/row['iterations'], \
+	results['weak consensus %'] = results.apply ( \
+		lambda row: 100*row['weak consensus']/row['iterations'], \
 		axis=1)
-	results['single-peaked prob'] = results.apply ( \
-		lambda row: row['single-peaked']/row['iterations'], \
+	results['single-peaked %'] = results.apply ( \
+		lambda row: 100*row['single-peaked']/row['iterations'], \
 		axis=1)
+
+	plt.subplots(2, 3, sharex=True)
 
 	plot_prob_vs_phi(results, plt.subplot(2, 3, 1), numvotes=100, numalternatives=3, legend=False)
 	plot_prob_vs_phi(results, plt.subplot(2, 3, 4), numvotes=1000, numalternatives=3, legend=False)
@@ -145,9 +148,14 @@ def plots(results: DataFrame):
 	plot_prob_vs_phi(results, plt.subplot(2, 3, 5), numvotes=1000, numalternatives=4, legend=False)
 	plot_prob_vs_phi(results, plt.subplot(2, 3, 3), numvotes=100, numalternatives=5, legend=False)
 	plot_prob_vs_phi(results, plt.subplot(2, 3, 6), numvotes=1000, numalternatives=5, legend=True)
-	plt.legend(loc=0,prop={'size':10})
-
-	#plt.xlabel('Noise size', fontsize=10)
+	plt.legend(loc=0,prop={'size':15})
+	
+	for i in range(1,7):
+		plt.subplot(2, 3, i).tick_params(axis='both', which='major', labelsize=15)
+	for i in [1,2,3]:
+		plt.subplot(2, 3, i).get_xaxis().set_visible(False)
+	for i in [2,3,5,6]:
+		plt.subplot(2, 3, i).get_yaxis().set_visible(False)
 
 	#ax = plt.subplot(1, 2, 2, sharey=ax)
 

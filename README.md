@@ -18,7 +18,7 @@ This code comes without warranty. Please use or distribute for research and acad
 
     sudo pip3 install -e .
 
-#Dev Notes
+# Notes for developers
 - This is being updated piecemeal in order to make it a more coherent Python package and make the interface more reasonable.  The master branch will always contain a working version of the code while the dev branch may be a bit spotty.
 - I am currently working on adding some tests and adding notebooks which serve as documentation to the interface.
 - We are mid-refactor so the tools may be broken until the next major release number (v2.0).  Please checkout from tagged version 1.5 if you need working tools.
