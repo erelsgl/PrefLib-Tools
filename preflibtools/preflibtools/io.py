@@ -453,7 +453,7 @@ if __name__ == '__main__':
 
 
   # Grab and read a file.
-  inputfile = "../../preflibdata/ED-00004-00000001.soc"
+  inputfile = input("Input File: ")
   print("read_election_file", read_election_file(open(inputfile, 'r')))
   
   p = read_weighted_preflib_file(inputfile)
