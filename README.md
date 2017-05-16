@@ -1,15 +1,19 @@
 # PrefLib-Tools
 
 ## About
-PrefLib Tools (c) Nicholas Mattei and Data61/NICTA.
+This is a fork of **PrefLib Tools** - Python 3+ tools for working with data from www.PrefLib.org and generating synthetic data for use in voting and preference experiments. Please see www.PrefLib.org for more information about the project and a large library of real-world preference data.
 
-A small set of lightweight tools in Python 3+ for working with data from www.PrefLib.org and generating synthetic data for use in voting and preference experiments.
+The original code is by Nicholas Mattei and Data61/NICTA (c). For questions or comments please contact nsmattei@gmail.com or Nicholas.Mattei@nicta.com.au.
 
-Please see www.PrefLib.org for more information about our project and a large library of real-world preference data.
+The fork is by Erel Segal-Halevi. For questions or comments please contact erelsgl@gmail.com.  
+The main changes are:
 
-For questions or comments please contact nsmattei@gmail.com or Nicholas.Mattei@nicta.com.au.
+* Adding documentation and doctest to existing code.
+* Adding code to check whether a preference profile satisfies the "level-1-consensus" domain-restriction (see preflibtools/consensus.py).
+* Adding code for two simulation experiments related to domain-restrictions (see the experiments/ folder).
 
-This code comes without warranty. Please use or distribute for research and academic uses only. Please use according to the citation and fair use requests on found at www.preflib.org.
+This code comes without warranty. Please use or distribute for research and academic uses only. 
+Please use according to the citation and fair use requests on found at www.preflib.org.
 
 ## Installation
     git clone https://github.com/nmattei/PrefLib-Tools
