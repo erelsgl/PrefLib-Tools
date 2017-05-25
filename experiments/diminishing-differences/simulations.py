@@ -132,6 +132,10 @@ def experiments(agents, iterations, filename):
 
 
 def plots(results1, results2):
+	titleFontSize = 14
+	legendFontSize = 16
+	axesFontSize = 16
+	
 	ax = plt.subplot(1, 2, 1)
 	agentCount = int(results1['Agents'][0])
 	iterations  = int(results1['Iterations'][0])
@@ -141,7 +145,8 @@ def plots(results1, results2):
 		lambda row: row['NDDPR fair']/row['NDDPR exists'], \
 		axis=1)
 
-	ax.set_title("probability vs. noise, "+str(agentCount)+' agents, '+str(itemCounts1)+' items per agent',fontsize= 10, weight='bold')
+	ax.set_title("probability vs. noise, "+str(agentCount)+' agents, '+str(itemCounts1)+' items per agent',fontsize= titleFontSize, weight='bold')
+	ax.set_xlabel('Noise size', fontsize=axesFontSize)
 
 	#results1.plot(x='Noise size',y='NDDPR fair 2', ax=ax, style=['k--'])
 
@@ -157,14 +162,13 @@ def plots(results1, results2):
 
 	#results1.plot(x='Noise size',y='DD', ax=ax, legend=True, style=['b--'])
 
-	results1.plot(x='Noise size',y='NDDPR exists', ax=ax, legend=True, style=['go-'])
+	results1.plot(x='Noise size',y='NDDPR exists', ax=ax, legend=True, style=['go-'], fontsize=axesFontSize)
 
-	results1.plot(x='Noise size',y='NDDPR fair', ax=ax, legend=True, style=['g--'])
+	results1.plot(x='Noise size',y='NDDPR fair', ax=ax, legend=True, style=['g--'], fontsize=axesFontSize)
 
-	results1.plot(x='Noise size',y='NecPR exists', ax=ax, legend=True, style=['r^-'])
+	results1.plot(x='Noise size',y='NecPR exists', ax=ax, legend=True, style=['r^-'], fontsize=axesFontSize)
 
-	#plt.xlabel('Noise size', fontsize=10)
-	plt.legend(loc=0,prop={'size':10})
+	plt.legend(loc=0,prop={'size':legendFontSize})
 
 
 	ax = plt.subplot(1, 2, 2, sharey=ax)
@@ -176,7 +180,8 @@ def plots(results1, results2):
 		lambda row: row['NDDPR fair']/row['NDDPR exists'], \
 		axis=1)
 
-	ax.set_title("probability vs. items, "+str(agentCount)+' agents, |noise|<='+str(maxNoise),fontsize= 10, weight='bold')
+	ax.set_title("probability vs. items, "+str(agentCount)+' agents, |noise|<='+str(maxNoise),fontsize= titleFontSize, weight='bold')
+	ax.set_xlabel('Items per agent', fontsize=axesFontSize)
 
 	#results2.plot(x='Items per agent',y='NDDPR fair 2', ax=ax, legend=True, style=['k--'])
 
@@ -192,15 +197,15 @@ def plots(results1, results2):
 
 	#results1.plot(x='Items per agent',y='DD', ax=ax, legend=True, style=['b--'])
 
-	results2.plot(x='Items per agent',y='NDDPR exists', ax=ax,  legend=True, style=['go-'])
+	results2.plot(x='Items per agent',y='NDDPR exists', ax=ax,  legend=True, style=['go-'], fontsize=axesFontSize)
 
-	results2.plot(x='Items per agent',y='NDDPR fair', ax=ax, legend=True, style=['g--'])
+	results2.plot(x='Items per agent',y='NDDPR fair', ax=ax, legend=True, style=['g--'], fontsize=axesFontSize)
 
-	results2.plot(x='Items per agent',y='NecPR exists', ax=ax, legend=True, style=['r^-'])
+	results2.plot(x='Items per agent',y='NecPR exists', ax=ax, legend=True, style=['r^-'], fontsize=axesFontSize)
 
 	itemCounts = results2['Items per agent'].tolist()
 
-	plt.legend(loc=0,prop={'size':10})
+	plt.legend(loc=0,prop={'size':legendFontSize})
 	plt.xticks(itemCounts)
 
 	plt.show()
