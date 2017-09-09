@@ -1,7 +1,11 @@
 # PrefLib-Tools
 
 # About
-This is a fork of **PrefLib Tools** - Python 3+ tools for working with data from www.PrefLib.org and generating synthetic data for use in voting and preference experiments. Please see www.PrefLib.org for more information about the project and a large library of real-world preference data.
+This is a fork of **PrefLib Tools** - Python 3+ tools for working with preference-relations. 
+
+It is especially tailored for working with 
+data from the www.PrefLib.org repository. 
+It also conatains functions for generating synthetic data for use in voting and preference experiments. Please see www.PrefLib.org for more information about the project and a large library of real-world preference data.
 
 The original code is by Nicholas Mattei and Data61/NICTA (c). For questions or comments please contact nsmattei@gmail.com or Nicholas.Mattei@nicta.com.au.
 

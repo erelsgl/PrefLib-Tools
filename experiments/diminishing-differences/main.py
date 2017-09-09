@@ -148,20 +148,6 @@ def plots(results1, results2):
 	ax.set_title("probability vs. noise, "+str(agentCount)+' agents, '+str(itemCounts1)+' items per agent',fontsize= titleFontSize, weight='bold')
 	ax.set_xlabel('Noise size', fontsize=axesFontSize)
 
-	#results1.plot(x='Noise size',y='NDDPR fair 2', ax=ax, style=['k--'])
-
-	#results1.plot(x='Noise size',y='ABCCBA fair', ax=ax, style=['m--'])
-
-	#results1.plot(x='Noise size',y='PosPR exists', ax=ax, legend=True, style=['m--'])
-
-	#results1.plot(x='Noise size',y='PosPR fair',ax=ax, legend=True, style=['m--'])
-
-	#results1.plot(x='Noise size',y='PDDPR exists', ax=ax, legend=True, style=['bo-'])
-
-	#results1.plot(x='Noise size',y='PDDPR fair', ax=ax, legend=True, style=['b--'])
-
-	#results1.plot(x='Noise size',y='DD', ax=ax, legend=True, style=['b--'])
-
 	results1.plot(x='Noise size',y='NDDPR exists', ax=ax, legend=True, style=['go-'], fontsize=axesFontSize)
 
 	results1.plot(x='Noise size',y='NDDPR fair', ax=ax, legend=True, style=['g--'], fontsize=axesFontSize)
@@ -182,20 +168,6 @@ def plots(results1, results2):
 
 	ax.set_title("probability vs. items, "+str(agentCount)+' agents, |noise|<='+str(maxNoise),fontsize= titleFontSize, weight='bold')
 	ax.set_xlabel('Items per agent', fontsize=axesFontSize)
-
-	#results2.plot(x='Items per agent',y='NDDPR fair 2', ax=ax, legend=True, style=['k--'])
-
-	#results2.plot(x='Items per agent',y='ABCCBA fair', ax=ax, legend=True, style=['m--'])
-
-	# results2.plot(x='Items per agent',y='PosPR exists', ax=ax, legend=True, style=['mo-'])
-
-	# results2.plot(x='Items per agent',y='PosPR fair', ax=ax, legend=True, style=['m--'])
-
-	# results2.plot(x='Items per agent',y='PDDPR exists', ax=ax, legend=True, style=['bo-'])
-
-	# results2.plot(x='Items per agent',y='PDDPR fair', ax=ax, legend=True, style=['b--'])
-
-	#results1.plot(x='Items per agent',y='DD', ax=ax, legend=True, style=['b--'])
 
 	results2.plot(x='Items per agent',y='NDDPR exists', ax=ax,  legend=True, style=['go-'], fontsize=axesFontSize)
 
