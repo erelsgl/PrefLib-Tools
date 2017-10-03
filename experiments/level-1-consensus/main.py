@@ -121,7 +121,7 @@ def plot_prob_vs_phi(results: DataFrame, ax, numvotes:int, numalternatives:int, 
 	#ax.set_title("probability vs. phi, "+str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 10, weight='bold')
 	ax.set_title(str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 15, weight='bold')
 	results1 = results.query("numvotes=="+str(numvotes)+" and numalternatives=="+str(numalternatives))
-	
+
 	results1.plot(x='phi', y='flexible consensus %', ax=ax, legend=legend, style=['go-'])
 	results1.plot(x='phi', y='single-peaked %', ax=ax, legend=legend, style=['b--'])
 	results1.plot(x='phi', y='consensus %', ax=ax, legend=legend, style=['r^-'])
@@ -130,7 +130,6 @@ def plot_prob_vs_phi(results: DataFrame, ax, numvotes:int, numalternatives:int, 
 
 
 def plots(results: DataFrame):
-	results['flexible consensus'] = results['weak consensus']
 	results['consensus %'] = results.apply ( \
 		lambda row: 100*row['consensus']/row['iterations'], \
 		axis=1)
@@ -176,4 +175,6 @@ else:   # Use existing results:
 	filename = "mallows_1000iters"
 	
 results = pandas.read_csv("results/"+filename+".csv")
+impartial3 = results[results["phi"]==1][results["numalternatives"]==3]
+impartial3.to_csv("results/mallows_1000iters_impartial3.csv")
 plots(results)
