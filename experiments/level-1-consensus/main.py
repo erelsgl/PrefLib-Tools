@@ -37,7 +37,7 @@ class ConsensusCounter(object):
 
 		before = time.process_time()
 		consensusPref = consensus.getLevel1Consensus(profile, weak=True)
-		if (self.verbose): print("weak consensus pref: ",consensusPref)
+		if (self.verbose): print("flexible consensus pref: ",consensusPref)
 		self.weakConsensusExists[numalternatives] += (consensusPref is not None)
 		if (self.verbose): print("time: ",time.process_time()-before)
 		
@@ -91,7 +91,7 @@ def SinglePeakedExperiment(iterations:int, numvotes:int, numalternativess:list):
 	counter.show()
 
 def MallowsExperiment(iterations:int, numvotess:int, phis:float, numalternativess:list, filename:str):
-	results =  DataFrame(columns=('iterations', 'numvotes', 'phi', 'numalternatives', 'consensus', 'weak consensus', 'single-peaked'))
+	results =  DataFrame(columns=('iterations', 'numvotes', 'phi', 'numalternatives', 'consensus', 'flexible consensus', 'single-peaked'))
 	
 	for numalternatives in numalternativess:
 		alternatives = range(numalternatives)
@@ -121,8 +121,8 @@ def plot_prob_vs_phi(results: DataFrame, ax, numvotes:int, numalternatives:int, 
 	#ax.set_title("probability vs. phi, "+str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 10, weight='bold')
 	ax.set_title(str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 15, weight='bold')
 	results1 = results.query("numvotes=="+str(numvotes)+" and numalternatives=="+str(numalternatives))
-	
-	results1.plot(x='phi', y='weak consensus %', ax=ax, legend=legend, style=['go-'])
+
+	results1.plot(x='phi', y='flexible consensus %', ax=ax, legend=legend, style=['go-'])
 	results1.plot(x='phi', y='single-peaked %', ax=ax, legend=legend, style=['b--'])
 	results1.plot(x='phi', y='consensus %', ax=ax, legend=legend, style=['r^-'])
 	ax.set_xlabel('phi', fontsize=15)
@@ -133,8 +133,8 @@ def plots(results: DataFrame):
 	results['consensus %'] = results.apply ( \
 		lambda row: 100*row['consensus']/row['iterations'], \
 		axis=1)
-	results['weak consensus %'] = results.apply ( \
-		lambda row: 100*row['weak consensus']/row['iterations'], \
+	results['flexible consensus %'] = results.apply ( \
+		lambda row: 100*row['flexible consensus']/row['iterations'], \
 		axis=1)
 	results['single-peaked %'] = results.apply ( \
 		lambda row: 100*row['single-peaked']/row['iterations'], \
@@ -175,4 +175,6 @@ else:   # Use existing results:
 	filename = "mallows_1000iters"
 	
 results = pandas.read_csv("results/"+filename+".csv")
+impartial3 = results[results["phi"]==1][results["numalternatives"]==3]
+impartial3.to_csv("results/mallows_1000iters_impartial3.csv")
 plots(results)
