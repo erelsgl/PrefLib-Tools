@@ -1,7 +1,7 @@
 # PrefLib-Tools
 
 # About
-This is a fork of **PrefLib Tools** - Python 3 tools for working with preference-relations. 
+**PrefLib Tools** - Python 3 tools for working with preference-relations. 
 
 It is especially tailored for working with 
 data from the PrefLib repository. see www.PrefLib.org for more information about the project and a large library of real-world preference data.
@@ -10,8 +10,7 @@ It also conatains functions for generating synthetic data for use in voting and 
 
 The original code is by Nicholas Mattei and Data61/NICTA (c). For questions or comments please contact nsmattei@gmail.com or Nicholas.Mattei@nicta.com.au.
 
-The fork is by Erel Segal-Halevi. For questions or comments please contact erelsgl@gmail.com.  
-The main changes are:
+Some additions were made by Erel Segal-Halevi (erelsgl@gmail.com):
 
 * Adding documentation to existing code.
 * Adding code to check whether a preference-profile satisfies the Level-1 Consensus and Flexible Consensus domain restriction (see preflibtools/consensus.py).
