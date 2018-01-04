@@ -1,3 +1,4 @@
+#!python3
 '''
   File:   profile_tests.py
   Author: Nicholas Mattei (nsmattei@gmail.com)
@@ -81,6 +82,3 @@ def test_file_read():
   p = io.read_weighted_preflib_file("/Users/Nick/repo/www-preflib.github/www/data/election/glasgow/ED-00008-00000001.toc")
 
   print(p)
-
-
-

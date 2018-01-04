@@ -1,3 +1,4 @@
+#!python3
 '''
   File:   io.py
   Author: Nicholas Mattei (nsmattei@gmail.com)
@@ -44,6 +45,11 @@ from preflibtools import profile
 import re
 import math
 import copy
+
+def num(s: str):
+    """ convert a string to either an int or a float """
+    try: return int(s)
+    except ValueError: return float(s)
 
 
 def read_weighted_preflib_file(fname):
@@ -99,7 +105,7 @@ def read_weighted_preflib_file(fname):
       for i,o in enumerate(lines):
         cleaned = re.sub("(\{[1-9,]*\})", lambda x:x.group(0).replace(',',' '),o)
         bits = cleaned.strip().split(",")
-        weight = bits[0]
+        weight = num(bits[0])
         ranks = {}
         for j,r in enumerate(bits[1:]):
           if "{" in r:
@@ -126,6 +132,16 @@ def write_map(candmap, nvoters, votemap, file):
 # Given a file in one of the Preflib Election Data
 # formats, return a list of rankmaps.
 def read_election_file(inputfile):
+  """
+  INPUT: inputfile, a file-object. 
+  Should be open and point to a file in the PrefLib Election Data format, "ED-*.*".
+  
+  OUTPUT:
+  * candmap       - dict, maps candidate-id to candidate-name.
+  * rankmaps      - list of dicts, each of which represents a ranking (maps candidate to rank).
+  * rankmapcounts - list of ints,  each of them represents the frequency of the above rankings.
+  * numvoters     - int, total number of voters.
+  """
   #first element is the number of candidates.
   l = inputfile.readline()
   numcands = int(l.strip())
@@ -179,8 +195,7 @@ def read_election_file(inputfile):
 
   #Sanity check:
   if sum(rankmapcounts) != sumvotes or len(rankmaps) != uniqueorders:
-    print("Error Parsing File: Votes Not Accounted For!")
-    exit()
+    raise ValueError("Error Parsing File: Votes Not Accounted For!")
 
   return candmap, rankmaps, rankmapcounts, numvoters
 
@@ -369,12 +384,19 @@ def rankmap_to_order(rm):
     order[rm[i]-1] = i
   return order
 
-# Convert a set of rankmap to be a mapping from Rank --> Candidate
+# Convert a mapping from Candidate-->Rank to a mapping from Rank-->Candidate
 def rankmap_convert_rank_to_candidate(rmaps):
-  rank_to_cand = []
-  for i in rmaps:
-    rank_to_cand.append({v:k for k, v in i.items()})
-  return(rank_to_cand)
+  """
+  INPUT:  rmaps - list, each item is a map mapping candidate ids to their ranks.
+  
+  OUTPUT: list, each item is a list with the candidate ids in their rank order.
+  
+  >>> rankmap_convert_rank_to_candidate([{10:1,20:2,30:3}])
+  [{1: 10, 2: 20, 3: 30}]
+  >>> rankmap_convert_rank_to_candidate([{10:1,20:3,30:2}, {10:3,20:1,30:2}])
+  [{1: 10, 2: 30, 3: 20}, {1: 20, 2: 30, 3: 10}]
+  """
+  return [{v:k for k, v in rmap.items()}   for   rmap in rmaps]
 
 #Convert a set of rank_to_candidate back to a set of rankmaps.
 def rank_to_candidate_convert_to_rankmap(r_to_c):
@@ -420,14 +442,23 @@ def pp_profile_toscreen(candmap, rankmaps, rankmapcounts):
         outstr += str(rorder[cr][0]) + ","
     print("{:^8}".format(str(srmapc[i])) + "|" + "{:^35}".format(str(outstr[:len(outstr)-1])))
 
-
+    
 
 # Below is a template Main which shows off some of the
 # features of this library.
 if __name__ == '__main__':
+  import doctest
+  doctest.testmod()
+  print("Doctest OK!\n")
+
 
   # Grab and read a file.
   inputfile = input("Input File: ")
+  print("read_election_file", read_election_file(open(inputfile, 'r')))
+  
+  p = read_weighted_preflib_file(inputfile)
+  print("read_weighted_preflib_file", p)
+  
   inf = open(inputfile, 'r')
   cmap, rmaps, rmapscounts, nvoters = read_election_file(inf)
 

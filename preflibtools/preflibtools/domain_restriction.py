@@ -1,3 +1,4 @@
+#!python3
 '''
 	*File: 	  domain_restriction.py
 	*Author:	Nicholas Mattei (nicholas.mattei@nicta.com.au)
@@ -39,12 +40,9 @@ About
 	This file tests a profile for being single-peaked.
 '''
 
-import sys
 import copy
-import glob
 
 from preflibtools import io
-from preflibtools import generate_profiles
 
 # Implement of the Single Peaked Consistancy Algorithm detailed in
 # B. Escoffier, J. Lang, and M. Ozturk, "Single-peaked consistency and its complexity".
@@ -57,18 +55,58 @@ from preflibtools import generate_profiles
 # Note that this algorithm only works for STRICT preferences.  If a non-strict 
 # set of rankmaps is passed in, an error is returned.
 def is_single_peaked(rmaps, candmap):
+  """
+  INPUT:
+  rmaps - list, each item is a map mapping candidate-ids to their ranks.
+  candmap - map of candidates. But only its len is used, and it is used only for validity checks - checking that all rankings are strict
+  
+  OUTPUT: list:
+  * If the profile is single-peaked - it is the "social axis".
+  * Otherwise - it is an empty list []
+  
+  >>> candmap = {1:"Alice",2:"Bob",3:"Carl"}   
+  >>> is_single_peaked([{1:1,2:2,3:3}], candmap) is not None
+  True
+  >>> is_single_peaked([{1:1,2:2,3:3}, {1:3,2:2,3:1}], candmap) 
+  [1, 2, 3]
+  >>> is_single_peaked([{1:3,2:2,3:1}, {1:1,2:2,3:3}], candmap) 
+  [1, 2, 3]
+  >>> is_single_peaked([{1:3,2:2,3:1}, {1:1,2:2,3:3}, {1:1,3:2,2:3}], candmap)
+  []
+  """
+  numcandidates = len(candmap)
   for current in rmaps:
-      if len(current) != len(candmap):
-        print("is_single_peaked called with non-strict preferences")
-        exit()
+      if len(current) != numcandidates:
+        raise ValueError("is_single_peaked called with non-strict preferences")
+  orders = order_vectors(rmaps)      # list of lists, each of which represents a linear ranking.
+  return is_single_peaked_orders(orders)
+  
 
-  orders = order_vectors(rmaps)
-  fullorders = order_vectors(rmaps)
+def is_single_peaked_orders(orders):
+  """
+  INPUT:
+  orders - list, each item is a list representing a linear order.
+  
+  OUTPUT: list:
+  * If the profile is single-peaked - it is the "social axis".
+  * Otherwise - it is an empty list []
+  
+  >>> is_single_peaked_orders([[1,2,3]]) is not None
+  True
+  >>> is_single_peaked_orders([[1,2,3],[3,2,1]]) 
+  [1, 2, 3]
+  >>> is_single_peaked_orders([[3,2,1],[1,2,3]]) 
+  [1, 2, 3]
+  >>> is_single_peaked_orders([[3,2,1],[1,2,3],[1,3,2]])
+  []
+  """
+  orders = list(orders)
+  fullorders = copy.deepcopy(orders) 
 
   #Build the order...
   leftside = []
   rightside = []
-  last_cands = last_set(orders)
+  last_cands = last_set(orders)  # list of (unique) candidates who are last in one or more of the rankings.
   
   # Only one last makes no constraints so iterate...
   while (len(last_cands) == 1):
@@ -81,7 +119,7 @@ def is_single_peaked(rmaps, candmap):
   #Only break if we have != 1 last candidate, wither we quit, or we put on one each end.
   if len(last_cands) > 2:
     return []
-  else:
+  elif len(last_cands) == 2:
     leftside.append(last_cands[0])
     rightside.insert(0,last_cands[1])
     orders = remove_cands(orders, last_cands)
@@ -183,13 +221,19 @@ def is_single_peaked(rmaps, candmap):
 
 # Helper function to find last place candidates
 def last_set(orders):
-  if len(orders) > 0 and len(orders[0]) > 0:
-    # Make and return the set of last place candidates
-    last_cands = set()
-    for i in orders:
-      last_cands.add(i[len(i)-1])
+  """
+  INPUT: orders - list of lists, each of which represents a linear ranking of candidates.
   
-  return(list(last_cands))
+  OUTPUT: list of unique candidates who are last in the rankings.
+  
+  >>> last_set([[1,2,3]])
+  [3]
+  >>> last_set([[1,2,3],[2,1,3]])
+  [3]
+  >>> last_set([[1,2,3],[2,1,3],[3,1,2]])
+  [2, 3]
+  """
+  return list({order[-1] for order in orders if order})
 
 # Helper function to compute the result of removing (set) of candidates from a list of orders.
 def remove_cands(orders, cands_to_remove):
@@ -204,6 +248,16 @@ def remove_cands(orders, cands_to_remove):
 # Helper Function: Given cands --> rank, return a vector of unique vectors in the profile  
 # that are just the orders of the candidates with index 0 == most prefered.
 def order_vectors(rmaps):
+  """
+  INPUT:  rmaps - list, each item is a map mapping candidate ids to their ranks.
+  
+  OUTPUT: list, each item is a list with the candidate ids in their rank order.
+  
+  >>> order_vectors([{10:1,20:2,30:3}])
+  [[10, 20, 30]]
+  >>> order_vectors([{10:1,20:3,30:2}, {10:3,20:1,30:2}])
+  [[10, 30, 20], [20, 30, 10]]
+  """
   orders = []
   rank_to_candidate = io.rankmap_convert_rank_to_candidate(rmaps)
   for c_map in rank_to_candidate:
@@ -249,6 +303,12 @@ def verify_orders_single_peaked_axis_strict(axis, orders):
 
 # Generate a random instance and test it for SP -- Output the axis if it is...
 if __name__ == '__main__':
+  import doctest
+  doctest.testmod()
+  print("Doctest OK!\n")
+
+  from preflibtools import generate_profiles
+  import glob
 
   ncand = 3
   nvoters = 100
@@ -263,7 +323,6 @@ if __name__ == '__main__':
     print("Single Peaked w.r.t " + str(social_axis))
   else:
     print("Not Single Peaked")
-
 
   # Test all the SOC's... for fun....
   files = glob.glob("./soc/*.soc")
@@ -284,6 +343,13 @@ if __name__ == '__main__':
   print("Parsed " + str(total) + " SOC files")
   print("Exactly " + str(totalSP) + " were single peaked")
 
-
-
-  
+  # Test 1000 random-culture profiles:
+  total = 0
+  totalSP = 0
+  for i in range(1000):
+    rankmaps,x = generate_profiles.gen_impartial_culture_strict(nvoters, candmap)
+    total += 1
+    if is_single_peaked(rankmaps, candmap):
+      totalSP += 1
+  print("Generated " + str(total) + " profiles")
+  print("Exactly " + str(totalSP) + " were single peaked")
