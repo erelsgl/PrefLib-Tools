@@ -91,7 +91,7 @@ def SinglePeakedExperiment(iterations:int, numvotes:int, numalternativess:list):
 	counter.show()
 
 def MallowsExperiment(iterations:int, numvotess:int, phis:float, numalternativess:list, filename:str):
-	results =  DataFrame(columns=('iterations', 'numvotes', 'phi', 'numalternatives', 'consensus', 'flexible consensus', 'single-peaked'))
+	results =  DataFrame(columns=('iterations', 'numvotes', 'phi', 'numalternatives', 'Level-1 Consensus', 'Flexible Consensus', 'Single-peaked'))
 	
 	for numalternatives in numalternativess:
 		alternatives = range(numalternatives)
@@ -122,22 +122,22 @@ def plot_prob_vs_phi(results: DataFrame, ax, numvotes:int, numalternatives:int, 
 	ax.set_title(str(numvotes)+' voters, '+str(numalternatives)+' alternatives',fontsize= 15, weight='bold')
 	results1 = results.query("numvotes=="+str(numvotes)+" and numalternatives=="+str(numalternatives))
 
-	results1.plot(x='phi', y='flexible consensus %', ax=ax, legend=legend, style=['go-'])
-	results1.plot(x='phi', y='single-peaked %', ax=ax, legend=legend, style=['b--'])
-	results1.plot(x='phi', y='consensus %', ax=ax, legend=legend, style=['r^-'])
+	results1.plot(x='phi', y='Flexible Consensus %', ax=ax, legend=legend, style=['go-'])
+	results1.plot(x='phi', y='Single-peaked %', ax=ax, legend=legend, style=['b--'])
+	results1.plot(x='phi', y='Level-1 Consensus %', ax=ax, legend=legend, style=['r^-'])
 	ax.set_xlabel('phi', fontsize=15)
 	ax.set_ylabel('% exists', fontsize=15)
 
 
 def plots(results: DataFrame):
-	results['consensus %'] = results.apply ( \
-		lambda row: 100*row['consensus']/row['iterations'], \
+	results['Level-1 Consensus %'] = results.apply ( \
+		lambda row: 100*row['Level-1 Consensus']/row['iterations'], \
 		axis=1)
-	results['flexible consensus %'] = results.apply ( \
-		lambda row: 100*row['flexible consensus']/row['iterations'], \
+	results['Flexible Consensus %'] = results.apply ( \
+		lambda row: 100*row['Flexible Consensus']/row['iterations'], \
 		axis=1)
-	results['single-peaked %'] = results.apply ( \
-		lambda row: 100*row['single-peaked']/row['iterations'], \
+	results['Single-peaked %'] = results.apply ( \
+		lambda row: 100*row['Single-peaked']/row['iterations'], \
 		axis=1)
 
 	plt.subplots(2, 3, sharex=True)

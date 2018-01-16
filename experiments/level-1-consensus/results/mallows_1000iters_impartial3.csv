@@ -1,4 +1,4 @@
-,Unnamed: 0,iterations,numvotes,phi,numalternatives,consensus,flexible consensus,single-peaked
+,Unnamed: 0,iterations,numvotes,phi,numalternatives,Level-1 Consensus,Flexible Consensus,Single-peaked
 13,13,1000.0,100.0,1.0,3.0,3.0,45.0,0.0
 27,27,1000.0,200.0,1.0,3.0,0.0,45.0,0.0
 41,41,1000.0,300.0,1.0,3.0,0.0,55.0,0.0
