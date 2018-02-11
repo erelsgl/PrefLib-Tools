@@ -192,7 +192,7 @@ class WeightedOrderProfile:
     
   def get_map_from_order_to_weight(self) -> dict:
     """
-    Returns a dict that maps each possible ranking (a tuple) to its weight.
+    Returns a dict that maps each possible ranking (a tuple) to its weight (number of agents with that ranking).
     """
     return {v.get_order_tuple(): v.weight    for k,v in self.preferences.items()}
 

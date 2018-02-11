@@ -15,10 +15,10 @@ def download(path, filename):
         print("Downloading from {} to {}".format(url,filename))
         urllib.request.urlretrieve(url, filename)
 
-def download_election(subpath, index, subindex_range):
+def download_election(subpath, index, subindex_range, extension="soc"):
     print("\nDownloading election data {}".format(subpath))
     for subindex in subindex_range:
-        download("data/election/"+subpath, "ED-{:05d}-{:08d}.soc".format(index,subindex))
+        download("data/election/"+subpath, "ED-{:05d}-{:08d}.{}".format(index,subindex,extension))
 
 
 download_election("netflix", 4, range(1,200+1))

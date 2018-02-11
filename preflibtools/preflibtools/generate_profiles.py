@@ -375,9 +375,9 @@ def gen_icsp(numvotes, alternatives):
   OUTPUT:
   * voteMap - dict from tuples to ints: maps tuples that represent rankings, to the number of times it appears in the profile.
   
-  >>> voteMap = gen_urn(200, 0, [10,20,30])
-  >>> len(voteMap)   # should be 3! = num of different strict rankings.
-  6
+  >>> voteMap = gen_icsp(200, [10,20,30])
+  >>> len(voteMap)   # should be 4 - num of different single-peaked rankings.
+  4
   >>> type(voteMap)
   <class 'dict'>
   >>> voteMap[(10,20,30)] > 0

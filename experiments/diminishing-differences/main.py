@@ -6,6 +6,8 @@ Simulations of item assignment.
 Author: Erel Segai-Halevi
 Date:   2017-02
 """
+import sys
+sys.path.append("../../preflibtools")
 
 import numpy as np
 import pandas
@@ -19,12 +21,13 @@ from itemAssignment import *
 from partitions import equalPartitions
 import operator
 from timeit import default_timer as timer
-import sys
 
 np.random.seed(1)
 
-def checkProportional(prefProfile):
+def checkProportional(prefProfile:PrefProfile):
 	"""
+	INPUT: a preference profile.
+
 	OUTPUT (bool,bool):  whether an NDDPR allocation exists for the given profile,
 	and if it exists, whether it is cardinally fair.
 	"""
