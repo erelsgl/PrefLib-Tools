@@ -1,6 +1,5 @@
 '''
-    setup.py from the github CookieCutter
-    project.
+    setup.py from the github CookieCutter project.
 
     Notes: First attempt at making a good package.
 
