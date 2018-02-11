@@ -6,12 +6,11 @@ Author:  Erel Segal-Halevi
 Date:    2017-02
 """
 
-import pprint
+import pprint, glob, time, datetime, sys
+sys.path.append("../../preflibtools")
+
 from preflibtools import consensus, io, generate_profiles, domain_restriction
 from collections import Counter
-import glob
-import time, datetime
-
 import pandas
 from pandas import DataFrame
 from pandas.tools import plotting
@@ -36,7 +35,7 @@ class ConsensusCounter(object):
 		if (self.verbose): print("time: ",time.process_time()-before)
 
 		before = time.process_time()
-		consensusPref = consensus.getLevel1Consensus(profile, weak=True)
+		consensusPref = consensus.getLevel1Consensus(profile, flexible=True)
 		if (self.verbose): print("flexible consensus pref: ",consensusPref)
 		self.weakConsensusExists[numalternatives] += (consensusPref is not None)
 		if (self.verbose): print("time: ",time.process_time()-before)
@@ -75,7 +74,6 @@ def ImpartialCultureExperiment(iterations:int, numvotes:int, numreplace:int, num
 		for i in range(iterations):
 			profile = generate_profiles.gen_urn(numvotes, numreplace, range(numalternatives))
 			print (".",end='',flush=True)
-			#print(numalternatives, profile)
 			counter.count(profile, numalternatives)
 	counter.show()
 
@@ -86,7 +84,6 @@ def SinglePeakedExperiment(iterations:int, numvotes:int, numalternativess:list):
 		for i in range(iterations):
 			profile = generate_profiles.gen_icsp(numvotes, range(numalternatives))
 			print (".",end='',flush=True)
-			# print(numalternatives, profile)
 			counter.count(profile, numalternatives)
 	counter.show()
 
@@ -164,7 +161,7 @@ def plots(results: DataFrame):
 
 #################  MAIN  ###################
 
-createResults = False
+createResults = True
 if createResults:
 	#preflibDataExperiment()
 	iterations = 1000
