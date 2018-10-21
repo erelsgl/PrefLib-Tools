@@ -253,7 +253,7 @@ class Pref(object):
 
 if __name__ == "__main__":
 	import doctest
-	doctest.testmod()
+	print(doctest.testmod())
 
 	print ("random ",Pref.randomOrdinal([1,2,3,4,5]))
 	np.random.seed()
